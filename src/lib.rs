@@ -2,7 +2,7 @@
 /*!
 Thread-safe cell types for sending and sharing non-Send/non-Sync types across thread boundaries.
 
-![logo](art/logo.png)
+![logo](../../../art/logo.png)
 
 This crate provides specialized cell types that allow you to work with types that don't normally
 implement `Send` or `Sync` traits, enabling their use in concurrent contexts while maintaining
