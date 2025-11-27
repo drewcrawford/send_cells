@@ -87,6 +87,13 @@ Wraps non-Send futures without runtime checks:
 - Zero overhead compared to the underlying future
 - Requires manual verification of thread safety
 
+### `UnsafeSyncCell<T>`
+
+Allows sharing non-Sync types without runtime checks:
+- No synchronization overhead
+- Requires `unsafe` blocks for all access
+- Suitable when external synchronization is guaranteed
+
 ## When to Use Each Type
 
 | Type | Use When | Performance | Safety |
@@ -95,6 +102,7 @@ Wraps non-Send futures without runtime checks:
 | `SyncCell` | Sharing non-Sync types between threads | Good | Mutex protected |
 | `SendFuture` | Using non-Send futures with Send requirements | Good | Runtime checked |
 | `UnsafeSendCell` | Platform guarantees thread safety | Best | Manual verification |
+| `UnsafeSyncCell` | External synchronization guarantees | Best | Manual verification |
 | `UnsafeSendFuture` | Maximum performance for futures | Best | Manual verification |
 
 ## Platform Support
@@ -112,7 +120,7 @@ for web workers. Thread IDs are properly tracked even in WASM environments.
 
 ### Async Runtime Integration
 
-```rust
+```
 use send_cells::SendCell;
 use std::rc::Rc;
 
@@ -120,7 +128,7 @@ async fn process_data() {
     // Rc is not Send, but we need to use it in an async context
     let data = Rc::new(vec![1, 2, 3]);
     let cell = SendCell::new(data);
-    
+
     // Can be moved into async blocks that might run on different threads
     // Note: This would panic if actually polled on a different thread!
     let task = async move {
@@ -128,7 +136,7 @@ async fn process_data() {
         let data = cell.get();
         data.iter().sum::<i32>()
     };
-    
+
     // In a real application with tokio:
     // let result = tokio::spawn(task).await.unwrap();
 }
@@ -174,16 +182,17 @@ use std::rc::Rc;
 // Platform API guarantees callbacks run on main thread
 fn setup_main_thread_callback() {
     let data = Rc::new("main thread only");
-    
+
     // SAFETY: Platform guarantees this callback runs on main thread
     let cell = unsafe { UnsafeSendCell::new_unchecked(data) };
-    
+
     platform_specific_api(move || {
         // SAFETY: We're guaranteed to be on the main thread
         let data = unsafe { cell.get() };
         println!("Callback data: {}", data);
     });
 }
+# fn platform_specific_api<F: FnOnce() + Send + 'static>(_f: F) {}
 ```
 
 ## Safety Considerations
@@ -216,7 +225,7 @@ and can rigorously verify thread safety.
 ### Memory Overhead
 
 - **SendCell**: One `ThreadId` + wrapped value
-- **SyncCell**: One `Mutex<()>` + wrapped value  
+- **SyncCell**: One `Mutex<()>` + wrapped value
 - **UnsafeSendCell**: No overhead (transparent wrapper)
 
 ## Related Crates
