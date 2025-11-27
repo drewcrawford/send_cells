@@ -208,7 +208,8 @@ impl<T> SendCell<T> {
         assert_eq!(
             self.thread_id,
             crate::sys::thread::current().id(),
-            "Access SendCell from incorrect thread"
+            "Access SendCell<{}> from incorrect thread",
+            std::any::type_name::<T>()
         );
         //safe with assertion
         unsafe { self.get_unchecked() }
@@ -272,7 +273,8 @@ impl<T> SendCell<T> {
         assert_eq!(
             self.thread_id,
             crate::sys::thread::current().id(),
-            "Access SendCell from incorrect thread"
+            "Access SendCell<{}> from incorrect thread",
+            std::any::type_name::<T>()
         );
         unsafe { self.get_unchecked_mut() }
     }
@@ -449,7 +451,8 @@ impl<T> Drop for SendCell<T> {
             assert_eq!(
                 self.thread_id,
                 crate::sys::thread::current().id(),
-                "Drop SendCell from incorrect thread"
+                "Drop SendCell<{}> from incorrect thread",
+                std::any::type_name::<T>()
             );
         }
     }
@@ -566,7 +569,8 @@ impl<T: Future> Future for SendFuture<T> {
         assert_eq!(
             self.thread_id,
             crate::sys::thread::current().id(),
-            "SendFuture polled from incorrect thread"
+            "SendFuture<{}> polled from incorrect thread",
+            std::any::type_name::<T>()
         );
 
         // SAFETY: After the thread check, we can safely access the inner future
