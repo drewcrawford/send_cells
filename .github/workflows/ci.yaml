@@ -16,6 +16,8 @@ jobs:
         include:
           - os: ubuntu-latest
             target: "wasm32"
+        # other items may be listed here as well
+        # If so, they should be preserved
 
     steps:
       - uses: actions/checkout@v4
