@@ -87,6 +87,13 @@ Wraps non-Send futures without runtime checks:
 - Zero overhead compared to the underlying future
 - Requires manual verification of thread safety
 
+## [`UnsafeSyncCell<T>`]
+
+Allows sharing non-Sync types without runtime checks:
+- No synchronization overhead
+- Requires `unsafe` blocks for all access
+- Suitable when external synchronization is guaranteed
+
 # When to Use Each Type
 
 | Type | Use When | Performance | Safety |
@@ -95,6 +102,7 @@ Wraps non-Send futures without runtime checks:
 | `SyncCell` | Sharing non-Sync types between threads | Good | Mutex protected |
 | `SendFuture` | Using non-Send futures with Send requirements | Good | Runtime checked |
 | `UnsafeSendCell` | Platform guarantees thread safety | Best | Manual verification |
+| `UnsafeSyncCell` | External synchronization guarantees | Best | Manual verification |
 | `UnsafeSendFuture` | Maximum performance for futures | Best | Manual verification |
 
 # Platform Support
