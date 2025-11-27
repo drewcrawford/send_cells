@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+WARN_FLAGS="-D warnings"
+if [[ " $* " =~ " --relaxed " ]]; then
+    WARN_FLAGS=""
+fi
+RUSTFLAGS="$WARN_FLAGS" cargo clippy
