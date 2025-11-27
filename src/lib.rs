@@ -235,3 +235,4 @@ pub mod unsafe_sync_cell;
 pub use send_cell::{SendCell, SendFuture};
 pub use sync_cell::SyncCell;
 pub use unsafe_send_cell::{UnsafeSendCell, UnsafeSendFuture};
+pub use unsafe_sync_cell::UnsafeSyncCell;
